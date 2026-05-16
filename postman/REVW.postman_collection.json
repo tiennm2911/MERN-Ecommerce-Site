@@ -1,0 +1,342 @@
+{
+  "info": {
+    "name": "SHOPCART - REVW API Tests (Hồ Thân Chính)",
+    "description": "REVW module automation tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "00000000-fukekqse-0000-0000-000000000000"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001"
+    }
+  ],
+  "item": [
+    {
+      "name": "REVW_API_01 - addReview",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/addReview/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "addReview",
+            "6a07d3a6241e883ee018c472"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Auto test review\",\n  \"reviewer\": \"6a07f8e687b01fadb72ec245\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_02 - addReview cùng reviewer 2 lần",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/addReview/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "addReview",
+            "6a07d3a6241e883ee018c472"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"rating\": 3,\n  \"comment\": \"Duplicate\",\n  \"reviewer\": \"6a07f8e687b01fadb72ec245\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Already reviewed\", () => pm.expect(pm.response.text()).to.match(/already|review/i));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_03 - deleteProductReview",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/deleteProductReview/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "deleteProductReview",
+            "6a07d3a6241e883ee018c472"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reviewId\": \"000000000000000000000000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_04 - deleteReview không token (BUG)",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/deleteProductReview/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "deleteProductReview",
+            "6a07d3a6241e883ee018c472"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reviewId\": \"000000000000000000000000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_05 - deleteAllReviews",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/deleteAllProductReviews/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "deleteAllProductReviews",
+            "6a07d3a6241e883ee018c472"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_06 - getAddedToCartProducts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getAddedToCartProducts/6a07d3a6241e883ee018c46f",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getAddedToCartProducts",
+            "6a07d3a6241e883ee018c46f"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_07 - Seller mới (chưa có)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getAddedToCartProducts/000000000000000000000099",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getAddedToCartProducts",
+            "000000000000000000000099"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_08 - Performance addReview",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/addReview/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "addReview",
+            "6a07d3a6241e883ee018c472"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Perf\",\n  \"reviewer\": \"6a07f8e687b01fadb72ec245\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Response time < 500ms\", () => pm.expect(pm.response.responseTime).to.be.below(500));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_09 - getInterestedCustomers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getInterestedCustomers/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getInterestedCustomers",
+            "6a07d3a6241e883ee018c472"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "REVW_API_10 - getInterested không token (BUG)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getInterestedCustomers/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getInterestedCustomers",
+            "6a07d3a6241e883ee018c472"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

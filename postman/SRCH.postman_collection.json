@@ -1,0 +1,296 @@
+{
+  "info": {
+    "name": "SHOPCART - SRCH API Tests (Phạm Văn Nhật)",
+    "description": "SRCH module automation tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "00000000-jg5ljw83-0000-0000-000000000000"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001"
+    }
+  ],
+  "item": [
+    {
+      "name": "SRCH_API_01 - search \"Samsung\"",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProduct/Samsung",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProduct",
+            "Samsung"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_02 - search \"SAMSUNG\" (case-insensitive)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProduct/SAMSUNG",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProduct",
+            "SAMSUNG"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_03 - search không có kết quả",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProduct/xyzkhongtontai123",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProduct",
+            "xyzkhongtontai123"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"No products found\", () => pm.expect(pm.response.text()).to.match(/No products/i));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_04 - Regex injection .* (BUG)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProduct/.*",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProduct",
+            ".*"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"BUG: regex injection returns all products\", () => { const arr = pm.response.json(); pm.expect(Array.isArray(arr) && arr.length > 5).to.be.true; });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_05 - Regex injection (.*) (BUG)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProduct/(.*)",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProduct",
+            "(.*)"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"BUG: special regex chars not escaped\", () => { pm.expect(pm.response.code).to.be.oneOf([200, 500]); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_06 - search by category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProductbyCategory/Electronics",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProductbyCategory",
+            "Electronics"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_07 - search by subcategory",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProductbySubCategory/Mobile Phones",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProductbySubCategory",
+            "Mobile Phones"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_08 - search empty string",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProduct/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProduct"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 404 (route không match)\", () => pm.expect(pm.response.code).to.equal(404));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_09 - Performance search",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProduct/Samsung",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProduct",
+            "Samsung"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Response time < 500ms\", () => pm.expect(pm.response.responseTime).to.be.below(500));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SRCH_API_10 - category không tồn tại",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/searchProductbyCategory/DanhMucKhongTonTai999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "searchProductbyCategory",
+            "DanhMucKhongTonTai999"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+START_NEWMAN_PROD
+newman
+
+SHOPCART - PROD API Tests (Phạm Minh Tiến)
+
+→ PROD_API_01 - getProducts
+  GET http://localhost:5001/getProducts [200 OK, 15.13kB, 25ms]
+  √  Status 200
+  √  Response is array
+
+→ PROD_API_02 - getProducts (DB rỗng giả lập)
+  GET http://localhost:5001/getProducts [200 OK, 15.13kB, 9ms]
+  √  Status 200
+
+→ PROD_API_03 - ProductCreate không token (BUG)
+  POST http://localhost:5001/ProductCreate [200 OK, 633B, 6ms]
+  1. Expected: HTTP 401
+
+→ PROD_API_04 - getProductDetail
+  GET http://localhost:5001/getProductDetail/6a07d3a6241e883ee018c472 [200 OK, 1.03kB, 7ms]
+  √  Status 200
+  √  Response has productName
+
+→ PROD_API_05 - Product ID không tồn tại
+  GET http://localhost:5001/getProductDetail/000000000000000000000000 [200 OK, 297B, 5ms]
+  √  Status 200
+  √  No product found
+
+→ PROD_API_06 - addReview không token (BUG)
+  PUT http://localhost:5001/addReview/6a07d3a6241e883ee018c472 [200 OK, 1.11kB, 9ms]
+  2. Expected: HTTP 401
+
+→ PROD_API_07 - ProductUpdate không token (BUG)
+  PUT http://localhost:5001/ProductUpdate/6a07d3a6241e883ee018c472 [200 OK, 1.1kB, 5ms]
+  3. Expected: HTTP 401
+
+→ PROD_API_08 - DeleteProduct không token (BUG)
+  DELETE http://localhost:5001/DeleteProduct/000000000000000000000000 [500 Internal Server Error, 286B, 4ms]
+  4. Expected: HTTP 401
+
+→ PROD_API_09 - getSellerProducts
+  GET http://localhost:5001/getSellerProducts/6a07d3a6241e883ee018c46f [200 OK, 12.11kB, 6ms]
+  √  Status 200
+
+→ PROD_API_10 - getInterestedCustomers
+  GET http://localhost:5001/getInterestedCustomers/6a07d3a6241e883ee018c472 [200 OK, 768B, 5ms]
+  √  Status 200
+
+→ PROD_API_11 - deleteAllReviews không token (BUG)
+  DELETE http://localhost:5001/deleteAllProductReviews/000000000000000000000000 [500 Internal Server Error, 286B, 5ms]
+  5. Expected: HTTP 401
+
+→ PROD_API_12 - Performance ProductCreate
+  POST http://localhost:5001/ProductCreate [200 OK, 631B, 9ms]
+  √  Response time < 800ms
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              12 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              12 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              15 │               5 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 1085ms                                  │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 45.24kB (approx)                       │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 7ms [min: 4ms, max: 25ms, s.d.: 5ms] │
+└─────────────────────────────────────────────────────────────┘
+
+[31m  # [39m[31m failure        [39m[31m detail                                                    [39m
+[90m    [39m[90m                [39m[90m                                                           [39m
+ 1.  AssertionError  Expected: HTTP 401                                        
+                     expected 200 to equal 401                                 
+                     at assertion:0 in test-script                             
+                     inside "PROD_API_03 - ProductCreate không token (BUG)"    
+[90m    [39m[90m                [39m[90m                                                           [39m
+ 2.  AssertionError  Expected: HTTP 401                                        
+                     expected 200 to equal 401                                 
+                     at assertion:0 in test-script                             
+                     inside "PROD_API_06 - addReview không token (BUG)"        
+[90m    [39m[90m                [39m[90m                                                           [39m
+ 3.  AssertionError  Expected: HTTP 401                                        
+                     expected 200 to equal 401                                 
+                     at assertion:0 in test-script                             
+                     inside "PROD_API_07 - ProductUpdate không token (BUG)"    
+[90m    [39m[90m                [39m[90m                                                           [39m
+ 4.  AssertionError  Expected: HTTP 401                                        
+                     expected 500 to equal 401                                 
+                     at assertion:0 in test-script                             
+                     inside "PROD_API_08 - DeleteProduct không token (BUG)"    
+[90m    [39m[90m                [39m[90m                                                           [39m
+ 5.  AssertionError  Expected: HTTP 401                                        
+                     expected 500 to equal 401                                 
+                     at assertion:0 in test-script                             
+                     inside "PROD_API_11 - deleteAllReviews không token (BUG)" 

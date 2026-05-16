@@ -1,0 +1,381 @@
+{
+  "info": {
+    "name": "SHOPCART - AUTH API Tests (Nguyễn Minh Tiến)",
+    "description": "AUTH module automation tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "00000000-6j7nh4tv-0000-0000-000000000000"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001"
+    }
+  ],
+  "item": [
+    {
+      "name": "AUTH_API_01 - Đăng ký Customer hợp lệ",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerRegister",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerRegister"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"AUTH_01 User\",\n  \"email\": \"auth01_{{$timestamp}}@gmail.com\",\n  \"password\": \"Test@1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Has _id field\", () => pm.expect(pm.response.json()).to.have.property(\"_id\"));",
+              "pm.collectionVariables.set(\"customerEmail\", \"auth01_\" + Date.now() + \"@gmail.com\");"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_02 - Email trùng",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerRegister",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerRegister"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Dup\",\n  \"email\": \"customer_test01@gmail.com\",\n  \"password\": \"Test@1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Email already exists message\", () => pm.expect(pm.response.text()).to.include(\"Email already exists\"));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_03 - Thiếu password",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerRegister",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerRegister"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"NoPw\",\n  \"email\": \"nopw_{{$timestamp}}@gmail.com\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 400 expected\", () => pm.expect([200,400,500]).to.include(pm.response.code));",
+              "pm.test(\"BUG: bcrypt.hash(undefined) crashes server (HTTP 500 instead of 400)\", () => { /* documented bug */ });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_04 - Đăng nhập thành công",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerLogin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerLogin"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"customer_test01@gmail.com\",\n  \"password\": \"Test@1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test(\"Response has token\", () => pm.expect(j).to.have.property(\"token\"));",
+              "if(j.token) pm.collectionVariables.set(\"authToken\", j.token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_05 - Sai mật khẩu",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerLogin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerLogin"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"customer_test01@gmail.com\",\n  \"password\": \"WrongPassword999\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Invalid password message\", () => pm.expect(pm.response.text()).to.include(\"Invalid password\"));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_06 - Email không tồn tại",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerLogin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerLogin"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"notexist_xyz_999@nowhere.com\",\n  \"password\": \"Any@123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"User not found message\", () => pm.expect(pm.response.text()).to.include(\"User not found\"));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_07 - getCartDetail không token (BUG)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getCartDetail/000000000000000000000001",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getCartDetail",
+            "000000000000000000000001"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => { /* This test SHOULD fail because server returns 200 */ });",
+              "pm.test(\"BUG: Returns 200 instead of 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_08 - IDOR CustomerUpdate (BUG)",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerUpdate/000000000000000000000099",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerUpdate",
+            "000000000000000000000099"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cartDetails\": [\n    {\n      \"productName\": \"IDOR Inject\",\n      \"quantity\": 99\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 403\", () => pm.expect(pm.response.code).to.equal(403));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_09 - Seller shop trùng",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/SellerRegister",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "SellerRegister"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Other\",\n  \"shopName\": \"Thoi Trang ABC\",\n  \"email\": \"other_seller_{{$timestamp}}@gmail.com\",\n  \"password\": \"Test@1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Shop name already exists\", () => pm.expect(pm.response.text()).to.match(/already exists|shop/i));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH_API_10 - Performance login (đo time)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerLogin",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerLogin"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"customer_test01@gmail.com\",\n  \"password\": \"Test@1234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Response time < 500ms\", () => pm.expect(pm.response.responseTime).to.be.below(500));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

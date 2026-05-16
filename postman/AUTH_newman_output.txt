@@ -1,0 +1,85 @@
+START_NEWMAN_AUTH
+newman
+
+SHOPCART - AUTH API Tests (Nguyễn Minh Tiến)
+
+→ AUTH_API_01 - Đăng ký Customer hợp lệ
+  POST http://localhost:5001/CustomerRegister [200 OK, 611B, 69ms]
+  √  Status 200
+  √  Has _id field
+
+→ AUTH_API_02 - Email trùng
+  POST http://localhost:5001/CustomerRegister [200 OK, 301B, 52ms]
+  √  Status 200
+  √  Email already exists message
+
+→ AUTH_API_03 - Thiếu password
+  POST http://localhost:5001/CustomerRegister [500 Internal Server Error, 286B, 3ms]
+  √  Status 400 expected
+  √  BUG: bcrypt.hash(undefined) crashes server (HTTP 500 instead of 400)
+
+→ AUTH_API_04 - Đăng nhập thành công
+  POST http://localhost:5001/CustomerLogin [200 OK, 600B, 52ms]
+  √  Status 200
+  √  Response has token
+
+→ AUTH_API_05 - Sai mật khẩu
+  POST http://localhost:5001/CustomerLogin [200 OK, 297B, 52ms]
+  √  Status 200
+  √  Invalid password message
+
+→ AUTH_API_06 - Email không tồn tại
+  POST http://localhost:5001/CustomerLogin [200 OK, 295B, 3ms]
+  √  Status 200
+  √  User not found message
+
+→ AUTH_API_07 - getCartDetail không token (BUG)
+  GET http://localhost:5001/getCartDetail/000000000000000000000001 [200 OK, 298B, 4ms]
+  √  Expected: HTTP 401
+  1. BUG: Returns 200 instead of 401
+
+→ AUTH_API_08 - IDOR CustomerUpdate (BUG)
+  PUT http://localhost:5001/CustomerUpdate/000000000000000000000099 [500 Internal Server Error, 286B, 6ms]
+  2. Expected: HTTP 403
+
+→ AUTH_API_09 - Seller shop trùng
+  POST http://localhost:5001/SellerRegister [200 OK, 305B, 55ms]
+  √  Status 200
+  √  Shop name already exists
+
+→ AUTH_API_10 - Performance login (đo time)
+  POST http://localhost:5001/CustomerLogin [200 OK, 600B, 52ms]
+  √  Status 200
+  √  Response time < 500ms
+
+┌─────────────────────────┬──────────────────┬──────────────────┐
+│                         │         executed │           failed │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              iterations │                1 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│                requests │               10 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│            test-scripts │               10 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│      prerequest-scripts │                0 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              assertions │               19 │                2 │
+├─────────────────────────┴──────────────────┴──────────────────┤
+│ total run duration: 1023ms                                    │
+├───────────────────────────────────────────────────────────────┤
+│ total data received: 1.17kB (approx)                          │
+├───────────────────────────────────────────────────────────────┤
+│ average response time: 34ms [min: 3ms, max: 69ms, s.d.: 25ms] │
+└───────────────────────────────────────────────────────────────┘
+
+[31m  # [39m[31m failure        [39m[31m detail                                                 [39m
+[90m    [39m[90m                [39m[90m                                                        [39m
+ 1.  AssertionError  BUG: Returns 200 instead of 401                        
+                     expected 200 to equal 401                              
+                     at assertion:1 in test-script                          
+                     inside "AUTH_API_07 - getCartDetail không token (BUG)" 
+[90m    [39m[90m                [39m[90m                                                        [39m
+ 2.  AssertionError  Expected: HTTP 403                                     
+                     expected 500 to equal 403                              
+                     at assertion:0 in test-script                          
+                     inside "AUTH_API_08 - IDOR CustomerUpdate (BUG)"       

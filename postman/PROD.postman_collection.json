@@ -1,0 +1,387 @@
+{
+  "info": {
+    "name": "SHOPCART - PROD API Tests (Phạm Minh Tiến)",
+    "description": "PROD module automation tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "00000000-7vcllhqd-0000-0000-000000000000"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001"
+    }
+  ],
+  "item": [
+    {
+      "name": "PROD_API_01 - getProducts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getProducts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getProducts"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Response is array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_02 - getProducts (DB rỗng giả lập)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getProducts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getProducts"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_03 - ProductCreate không token (BUG)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/ProductCreate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ProductCreate"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productName\": \"Hacker\",\n  \"price\": {\n    \"mrp\": 100,\n    \"cost\": 50,\n    \"discountPercent\": 50\n  },\n  \"category\": \"X\",\n  \"subcategory\": \"Y\",\n  \"tagline\": \"T\",\n  \"description\": \"D\",\n  \"productImage\": \"https://example.com/x.png\",\n  \"seller\": \"6a07d3a6241e883ee018c46f\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_04 - getProductDetail",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getProductDetail/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getProductDetail",
+            "6a07d3a6241e883ee018c472"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Response has productName\", () => pm.expect(pm.response.json()).to.have.property(\"productName\"));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_05 - Product ID không tồn tại",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getProductDetail/000000000000000000000000",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getProductDetail",
+            "000000000000000000000000"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"No product found\", () => pm.expect(pm.response.text()).to.match(/No product/i));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_06 - addReview không token (BUG)",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/addReview/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "addReview",
+            "6a07d3a6241e883ee018c472"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"rating\": 1,\n  \"comment\": \"Spam\",\n  \"reviewer\": \"000000000000000000000099\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_07 - ProductUpdate không token (BUG)",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/ProductUpdate/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ProductUpdate",
+            "6a07d3a6241e883ee018c472"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productName\": \"Hacked\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_08 - DeleteProduct không token (BUG)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/DeleteProduct/000000000000000000000000",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "DeleteProduct",
+            "000000000000000000000000"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_09 - getSellerProducts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getSellerProducts/6a07d3a6241e883ee018c46f",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getSellerProducts",
+            "6a07d3a6241e883ee018c46f"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_10 - getInterestedCustomers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getInterestedCustomers/6a07d3a6241e883ee018c472",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getInterestedCustomers",
+            "6a07d3a6241e883ee018c472"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_11 - deleteAllReviews không token (BUG)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/deleteAllProductReviews/000000000000000000000000",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "deleteAllProductReviews",
+            "000000000000000000000000"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PROD_API_12 - Performance ProductCreate",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/ProductCreate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ProductCreate"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productName\": \"Perf\",\n  \"price\": {\n    \"mrp\": 100,\n    \"cost\": 80,\n    \"discountPercent\": 20\n  },\n  \"category\": \"T\",\n  \"subcategory\": \"P\",\n  \"tagline\": \"P\",\n  \"description\": \"p\",\n  \"productImage\": \"https://example.com/x.png\",\n  \"seller\": \"6a07d3a6241e883ee018c46f\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Response time < 800ms\", () => pm.expect(pm.response.responseTime).to.be.below(800));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

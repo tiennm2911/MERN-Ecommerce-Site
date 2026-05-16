@@ -1,0 +1,82 @@
+START_NEWMAN_CART
+newman
+
+SHOPCART - CART API Tests (Nguyễn Thị Thanh Thảo)
+
+→ CART_API_01 - getCartDetail
+  GET http://localhost:5001/getCartDetail/6a07f8e687b01fadb72ec245 [200 OK, 267B, 18ms]
+  √  Status 200
+
+→ CART_API_02 - getCartDetail không tồn tại
+  GET http://localhost:5001/getCartDetail/000000000000000000000000 [200 OK, 298B, 4ms]
+  √  Status 200
+  √  No customer found
+
+→ CART_API_03 - CustomerUpdate add cart
+  PUT http://localhost:5001/CustomerUpdate/6a07f8e687b01fadb72ec245 [200 OK, 397B, 5ms]
+  √  Status 200
+
+→ CART_API_04 - newOrder
+  POST http://localhost:5001/newOrder [500 Internal Server Error, 714B, 5ms]
+  1. Status 200
+
+→ CART_API_05 - newOrder không token (BUG)
+  POST http://localhost:5001/newOrder [500 Internal Server Error, 2.95kB, 3ms]
+  2. Expected: HTTP 401
+
+→ CART_API_06 - getOrderedProductsByCustomer
+  GET http://localhost:5001/getOrderedProductsByCustomer/6a07f8e687b01fadb72ec245 [200 OK, 298B, 3ms]
+  √  Status 200
+
+→ CART_API_07 - Customer mới chưa order
+  GET http://localhost:5001/getOrderedProductsByCustomer/000000000000000000000099 [200 OK, 298B, 8ms]
+  √  Status 200
+
+→ CART_API_08 - getOrderedProductsBySeller
+  GET http://localhost:5001/getOrderedProductsBySeller/6a07d3a6241e883ee018c46f [200 OK, 789B, 6ms]
+  √  Status 200
+
+→ CART_API_09 - IDOR getCartDetail (BUG)
+  GET http://localhost:5001/getCartDetail/000000000000000000000099 [200 OK, 298B, 4ms]
+  3. Expected: HTTP 403
+
+→ CART_API_10 - Performance newOrder
+  POST http://localhost:5001/newOrder [500 Internal Server Error, 714B, 5ms]
+  √  Response time < 1000ms
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              11 │               3 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 923ms                                   │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 4.29kB (approx)                        │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 6ms [min: 3ms, max: 18ms, s.d.: 4ms] │
+└─────────────────────────────────────────────────────────────┘
+
+[31m  # [39m[31m failure        [39m[31m detail                                                [39m
+[90m    [39m[90m                [39m[90m                                                       [39m
+ 1.  AssertionError  Status 200                                            
+                     expected response to have status code 200 but got 500 
+                     at assertion:0 in test-script                         
+                     inside "CART_API_04 - newOrder"                       
+[90m    [39m[90m                [39m[90m                                                       [39m
+ 2.  AssertionError  Expected: HTTP 401                                    
+                     expected 500 to equal 401                             
+                     at assertion:0 in test-script                         
+                     inside "CART_API_05 - newOrder không token (BUG)"     
+[90m    [39m[90m                [39m[90m                                                       [39m
+ 3.  AssertionError  Expected: HTTP 403                                    
+                     expected 200 to equal 403                             
+                     at assertion:0 in test-script                         
+                     inside "CART_API_09 - IDOR getCartDetail (BUG)"       

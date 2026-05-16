@@ -1,0 +1,330 @@
+{
+  "info": {
+    "name": "SHOPCART - CART API Tests (Nguyễn Thị Thanh Thảo)",
+    "description": "CART module automation tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "00000000-61dx2tlp-0000-0000-000000000000"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001"
+    }
+  ],
+  "item": [
+    {
+      "name": "CART_API_01 - getCartDetail",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getCartDetail/6a07f8e687b01fadb72ec245",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getCartDetail",
+            "6a07f8e687b01fadb72ec245"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_02 - getCartDetail không tồn tại",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getCartDetail/000000000000000000000000",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getCartDetail",
+            "000000000000000000000000"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"No customer found\", () => pm.expect(pm.response.text()).to.match(/No customer/i));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_03 - CustomerUpdate add cart",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/CustomerUpdate/6a07f8e687b01fadb72ec245",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "CustomerUpdate",
+            "6a07f8e687b01fadb72ec245"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cartDetails\": [\n    {\n      \"_id\": \"6a07d3a6241e883ee018c472\",\n      \"productName\": \"Samsung\",\n      \"price\": {\n        \"mrp\": 19999,\n        \"cost\": 14199,\n        \"discountPercent\": 30\n      },\n      \"quantity\": 2\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_04 - newOrder",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/newOrder",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "newOrder"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"buyer\": \"6a07f8e687b01fadb72ec245\",\n  \"shippingData\": {\n    \"address\": \"123 Test\",\n    \"city\": \"HN\",\n    \"country\": \"VN\",\n    \"phoneNo\": \"0123\",\n    \"pinCode\": 100000\n  },\n  \"orderedProducts\": [\n    {\n      \"_id\": \"6a07d3a6241e883ee018c472\",\n      \"productName\": \"Samsung\",\n      \"price\": {\n        \"mrp\": 19999,\n        \"cost\": 14199,\n        \"discountPercent\": 30\n      },\n      \"quantity\": 1\n    }\n  ],\n  \"paymentInfo\": {\n    \"id\": \"pm_test\",\n    \"status\": \"ok\"\n  },\n  \"productsQuantity\": 1,\n  \"totalPrice\": 14199\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_05 - newOrder không token (BUG)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/newOrder",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "newOrder"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"buyer\": \"000000000000000000000099\",\n  \"shippingData\": {},\n  \"orderedProducts\": [],\n  \"paymentInfo\": {},\n  \"productsQuantity\": 0,\n  \"totalPrice\": 0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 401\", () => pm.expect(pm.response.code).to.equal(401));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_06 - getOrderedProductsByCustomer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getOrderedProductsByCustomer/6a07f8e687b01fadb72ec245",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getOrderedProductsByCustomer",
+            "6a07f8e687b01fadb72ec245"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_07 - Customer mới chưa order",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getOrderedProductsByCustomer/000000000000000000000099",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getOrderedProductsByCustomer",
+            "000000000000000000000099"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_08 - getOrderedProductsBySeller",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getOrderedProductsBySeller/6a07d3a6241e883ee018c46f",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getOrderedProductsBySeller",
+            "6a07d3a6241e883ee018c46f"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_09 - IDOR getCartDetail (BUG)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/getCartDetail/000000000000000000000099",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "getCartDetail",
+            "000000000000000000000099"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Expected: HTTP 403\", () => pm.expect(pm.response.code).to.equal(403));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART_API_10 - Performance newOrder",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/newOrder",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "newOrder"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"buyer\": \"6a07f8e687b01fadb72ec245\",\n  \"shippingData\": {\n    \"address\": \"P\",\n    \"city\": \"X\",\n    \"country\": \"Y\",\n    \"phoneNo\": \"0\",\n    \"pinCode\": 0\n  },\n  \"orderedProducts\": [\n    {\n      \"_id\": \"6a07d3a6241e883ee018c472\",\n      \"productName\": \"P\",\n      \"price\": {\n        \"mrp\": 1,\n        \"cost\": 1,\n        \"discountPercent\": 0\n      },\n      \"quantity\": 1\n    }\n  ],\n  \"paymentInfo\": {\n    \"id\": \"p\",\n    \"status\": \"ok\"\n  },\n  \"productsQuantity\": 1,\n  \"totalPrice\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Response time < 1000ms\", () => pm.expect(pm.response.responseTime).to.be.below(1000));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+START_NEWMAN_SRCH
+newman
+
+SHOPCART - SRCH API Tests (Phạm Văn Nhật)
+
+→ SRCH_API_01 - search "Samsung"
+  GET http://localhost:5001/searchProduct/Samsung [200 OK, 892B, 21ms]
+  √  Status 200
+
+→ SRCH_API_02 - search "SAMSUNG" (case-insensitive)
+  GET http://localhost:5001/searchProduct/SAMSUNG [200 OK, 892B, 7ms]
+  √  Status 200
+
+→ SRCH_API_03 - search không có kết quả
+  GET http://localhost:5001/searchProduct/xyzkhongtontai123 [200 OK, 298B, 4ms]
+  √  Status 200
+  √  No products found
+
+→ SRCH_API_04 - Regex injection .* (BUG)
+  GET http://localhost:5001/searchProduct/.* [200 OK, 16.05kB, 8ms]
+  √  BUG: regex injection returns all products
+
+→ SRCH_API_05 - Regex injection (.*) (BUG)
+  GET http://localhost:5001/searchProduct/(.*) [200 OK, 16.05kB, 9ms]
+  √  BUG: special regex chars not escaped
+
+→ SRCH_API_06 - search by category
+  GET http://localhost:5001/searchProductbyCategory/Electronics [200 OK, 9.61kB, 8ms]
+  √  Status 200
+
+→ SRCH_API_07 - search by subcategory
+  GET http://localhost:5001/searchProductbySubCategory/Mobile Phones [200 OK, 5.61kB, 6ms]
+  √  Status 200
+
+→ SRCH_API_08 - search empty string
+  GET http://localhost:5001/searchProduct [404 Not Found, 456B, 4ms]
+  √  Status 404 (route không match)
+
+→ SRCH_API_09 - Performance search
+  GET http://localhost:5001/searchProduct/Samsung [200 OK, 892B, 6ms]
+  √  Response time < 500ms
+
+→ SRCH_API_10 - category không tồn tại
+  GET http://localhost:5001/searchProductbyCategory/DanhMucKhongTonTai999 [200 OK, 298B, 5ms]
+  √  Status 200
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              11 │               0 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 947ms                                   │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 48.32kB (approx)                       │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 7ms [min: 4ms, max: 21ms, s.d.: 4ms] │
+└─────────────────────────────────────────────────────────────┘

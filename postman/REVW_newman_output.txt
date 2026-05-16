@@ -1,0 +1,77 @@
+START_NEWMAN_REVW
+newman
+
+SHOPCART - REVW API Tests (Hồ Thân Chính)
+
+→ REVW_API_01 - addReview
+  PUT http://localhost:5001/addReview/6a07d3a6241e883ee018c472 [200 OK, 1.25kB, 21ms]
+  √  Status 200
+
+→ REVW_API_02 - addReview cùng reviewer 2 lần
+  PUT http://localhost:5001/addReview/6a07d3a6241e883ee018c472 [200 OK, 334B, 5ms]
+  √  Status 200
+  √  Already reviewed
+
+→ REVW_API_03 - deleteProductReview
+  PUT http://localhost:5001/deleteProductReview/6a07d3a6241e883ee018c472 [200 OK, 1.25kB, 6ms]
+  √  Status 200
+
+→ REVW_API_04 - deleteReview không token (BUG)
+  PUT http://localhost:5001/deleteProductReview/6a07d3a6241e883ee018c472 [200 OK, 1.25kB, 5ms]
+  1. Expected: HTTP 401
+
+→ REVW_API_05 - deleteAllReviews
+  DELETE http://localhost:5001/deleteAllProductReviews/6a07d3a6241e883ee018c472 [200 OK, 827B, 6ms]
+  √  Status 200
+
+→ REVW_API_06 - getAddedToCartProducts
+  GET http://localhost:5001/getAddedToCartProducts/6a07d3a6241e883ee018c46f [200 OK, 630B, 4ms]
+  √  Status 200
+
+→ REVW_API_07 - Seller mới (chưa có)
+  GET http://localhost:5001/getAddedToCartProducts/000000000000000000000099 [200 OK, 341B, 3ms]
+  √  Status 200
+
+→ REVW_API_08 - Performance addReview
+  PUT http://localhost:5001/addReview/6a07d3a6241e883ee018c472 [200 OK, 961B, 7ms]
+  √  Response time < 500ms
+
+→ REVW_API_09 - getInterestedCustomers
+  GET http://localhost:5001/getInterestedCustomers/6a07d3a6241e883ee018c472 [200 OK, 850B, 5ms]
+  √  Status 200
+
+→ REVW_API_10 - getInterested không token (BUG)
+  GET http://localhost:5001/getInterestedCustomers/6a07d3a6241e883ee018c472 [200 OK, 850B, 3ms]
+  2. Expected: HTTP 401
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              10 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              11 │               2 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 844ms                                   │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 5.85kB (approx)                        │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 6ms [min: 3ms, max: 21ms, s.d.: 4ms] │
+└─────────────────────────────────────────────────────────────┘
+
+[31m  # [39m[31m failure        [39m[31m detail                                                 [39m
+[90m    [39m[90m                [39m[90m                                                        [39m
+ 1.  AssertionError  Expected: HTTP 401                                     
+                     expected 200 to equal 401                              
+                     at assertion:0 in test-script                          
+                     inside "REVW_API_04 - deleteReview không token (BUG)"  
+[90m    [39m[90m                [39m[90m                                                        [39m
+ 2.  AssertionError  Expected: HTTP 401                                     
+                     expected 200 to equal 401                              
+                     at assertion:0 in test-script                          
+                     inside "REVW_API_10 - getInterested không token (BUG)" 
