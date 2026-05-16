@@ -44,36 +44,96 @@ ShopCart is an ecommerce site developed using the MERN (MongoDB, Express.js, Rea
 
 # Installation
 
-```sh
-git clone https://github.com/Yogndrr/MERN-Ecommerce-Site.git
-```
-Open 2 terminals in separate windows/tabs.
+## Prerequisites
 
-Terminal 1: Setting Up Backend 
+- [Node.js](https://nodejs.org/) 18+ and npm
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (used only for MongoDB)
+
+## 1. Clone the repository
+
+```sh
+git clone https://github.com/tiennm2911/MERN-Ecommerce-Site.git
+cd MERN-Ecommerce-Site
+```
+
+## 2. Start MongoDB with Docker
+
+MongoDB runs inside a Docker container; the backend and frontend run on your host with `npm`.
+
+```sh
+docker compose up -d
+```
+
+This starts a MongoDB 7 container (`shopcart-mongo`) listening on `localhost:27017` with a persistent volume `mongo-data`.
+
+Useful commands:
+
+```sh
+docker compose ps         # check container status
+docker compose logs -f    # follow logs
+docker compose down       # stop (data is preserved in the volume)
+```
+
+## 3. Set up the backend
+
+Open a terminal and run:
+
 ```sh
 cd backend
 npm install
+```
+
+Create a `.env` file inside the `backend` folder with the following contents:
+
+```env
+MONGO_URL=mongodb://127.0.0.1:27017/ecommerce
+SECRET_KEY=secret-key
+PORT=5000
+```
+
+### Seed demo data
+
+Populate the database with a demo seller and sample products:
+
+```sh
+npm run seed
+```
+
+This creates:
+
+- **Demo seller** — email `demo@shop.com`, password `demo123`
+- A set of sample products listed under the demo seller's shop
+
+### Start the backend
+
+```sh
 npm start
 ```
 
-Create a file called .env in the backend folder.
-Inside it write this :
+The API will be available at `http://localhost:5000`.
 
-```sh
-MONGO_URL = mongodb://127.0.0.1/ecommerce
+## 4. Set up the frontend
 
-SECRET_KEY = 'secret-key'
-```
-Instead of this link write your database link.
+Open a second terminal and run:
 
-Terminal 2: Setting Up Frontend
 ```sh
 cd frontend
 npm install
+```
+
+Create a `.env` file inside the `frontend` folder with:
+
+```env
+REACT_APP_BASE_URL=http://localhost:5000
+```
+
+Start the frontend:
+
+```sh
 npm start
 ```
-Now, navigate to `localhost:3000` in your browser. 
-The Backend API will be running at `localhost:5000`.
+
+The app will open at `http://localhost:3000`.
 <br>
 # Error Solution
 
